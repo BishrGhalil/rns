@@ -1,0 +1,159 @@
+#!/bin/python
+import os
+import sys
+import time
+import shutil
+import re
+import inquirer as inq
+from platform import system
+from lists_header import *
+from colors import bcolors as colors
+
+# Getting static vars
+os_name = system() # Getting operating system's name
+video_path = sys.argv[1]
+sub_path = sys.argv[2]
+videos = os.listdir(video_path)
+videos = [video for video in videos if isvideo(video)]
+videos.sort()
+subs = os.listdir(sub_path)
+subs = [sub for sub in subs if issub(sub)]
+subs.sort()
+
+# Menus
+confirm_menu = [
+        inq.Confirm("istrue",
+            message = "Yes or No.",
+            default = "True"),
+        ]
+video_or_sub_menu = [
+        inq.List("op",
+            message = "Reorder the",
+            choices = ['videos', 'subtitles']),
+        ]
+
+# Define funcs
+if os_name.lower() in ["linux", "unix"]:
+    clear = lambda: os.system("clear")
+elif os_name.lower() in ["windows"]:
+    clear = lambda: os.system("cls")
+
+endl = lambda: print('\n')
+
+# Reorder func
+def re_order(org):
+    clear()
+    org_menu = [
+            inq.List('op',
+                message = "An item to move",
+                choices = [item for item in org]
+                ),
+            ]
+    ans = inq.prompt(org_menu)
+    ans = ans['op']
+    ans_index = org.index(ans)
+    alist = [item for item in org]
+    alist.pop(ans_index)
+    sec_menu = [
+            inq.List('op',
+                message = "An item to replace with",
+                choices = [item for item in alist]
+                ),
+            ]
+    sec_ans = inq.prompt(sec_menu)
+    sec_ans = sec_ans['op']
+    sec_ans_index = alist.index(sec_ans) + 1
+    print(f"Replace {ans} -> {sec_ans}")
+    confirm = inq.prompt(confirm_menu)
+    confirm = confirm['istrue']
+    if confirm:
+        org[ans_index], org[sec_ans_index] = org[sec_ans_index], org[ans_index]
+        clear()
+        print('The new order')
+        printlist(org, enum = True)
+        endl()
+        print("Move another one ?")
+        confirm = inq.prompt(confirm_menu)
+        confirm = confirm['istrue']
+        if confirm:
+            re_order(org)
+        else:
+            return True
+    else:
+        re_order(org)
+
+# Re order menu func
+def re_order_menu():
+    clear()
+    ans = inq.prompt(video_or_sub_menu)
+    ans = ans['op']
+    if "video" in ans:
+        re_order(videos)
+    elif "sub" in ans:
+        re_order(subs)
+    else:
+        print("Unkown option ):")
+        return 0
+    return 1
+
+# Auto menu func
+def auto_menu():
+    clear()
+    print(colors.BLUE + "Videos:" + colors.ENDC)
+    printlist(videos)
+    endl()
+    print(colors.BLUE + "Subtitles:" + colors.ENDC)
+    printlist(subs)
+
+    if len(subs) != len(videos):
+        print( colors.WARNING + "Warrning: Videos and Subitiles files don't have same number." + colors.ENDC)
+# Manual menu func
+def manual_menu():
+    pass
+# Main menu func
+def main_menu():
+    clear()
+    choice = [
+            inq.List('op',
+                message = "Process to do",
+                choices = ['Auto', 'Manual', 'Just exit'],
+                ),
+            ]
+    choice = inq.prompt(choice)
+    choice = choice['op']
+    if "Auto" in choice:
+        auto_menu()
+    elif "Manual" in choice:
+        manual_menu()
+    elif "exit" in choice:
+        print("Good bye...")
+        exit()
+
+    else:
+        print("Unkown option ):")
+        time.sleep(1)
+        main_menu()
+
+def rename_copy(subs):
+    renamed_sub_list = rename(subs, videos)
+    for org_sub, renamed_sub in zip(subs, renamed_sub_list):
+        org_sub_path = os.path.join(sub_path, org_sub)
+        target_sub_path = os.path.join(video_path, renamed_sub)
+        shutil.copytree(org_sub_path, target_sub_path)
+
+# Main
+def main():
+    main_menu()
+    endl()
+    print("Are you ok with this sorting ?")
+    ans = inq.prompt(confirm_menu)
+    if ans['istrue']:
+        rename_copy(subs)
+    else:
+        if not re_order_menu():
+            main()
+        else:
+            rename_copy(subs)
+
+if __name__=="__main__":
+    main()
