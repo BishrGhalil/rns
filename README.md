@@ -1,4 +1,4 @@
-# Re Name Subtitles (RNS)
+# ReName Subtitles (RNS)
 A simple python script to sort, rename and reorder subtitle files depending on their videos names.
 
 ### Usage
