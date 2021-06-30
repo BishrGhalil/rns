@@ -37,7 +37,7 @@ def get_sub_format(sub):
             return sub_format
 
 # rename a the subs list items to the videos list items's name
-def rename(org_list, target_list):
+def rename_to_list(org_list, target_list):
     output_list = []
     for org_item, target_item in zip(org_list, target_list):
         tmp_video_format = get_video_format(target_item)

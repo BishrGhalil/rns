@@ -2,7 +2,6 @@
 import os
 import sys
 import time
-import shutil
 import re
 import inquirer as inq
 from platform import system
@@ -13,6 +12,10 @@ from colors import bcolors as colors
 os_name = system() # Getting operating system's name
 video_path = sys.argv[1]
 sub_path = sys.argv[2]
+os.chdir(sub_path)
+sub_path = os.getcwd()
+os.chdir(video_path)
+video_path = os.getcwd()
 videos = os.listdir(video_path)
 videos = [video for video in videos if isvideo(video)]
 videos.sort()
@@ -34,8 +37,10 @@ video_or_sub_menu = [
 
 # Define funcs
 if os_name.lower() in ["linux", "unix"]:
+    copy = lambda org, dst: os.system(f"cp \"{org}\" \"{dst}\"")
     clear = lambda: os.system("clear")
 elif os_name.lower() in ["windows"]:
+    copy = lambda org, dst: os.system(f"copy \"{org}\" \"{dst}\"")
     clear = lambda: os.system("cls")
 
 endl = lambda: print('\n')
@@ -97,7 +102,7 @@ def re_order_menu():
     return 1
 
 # Auto menu func
-def auto_menu():
+def print_sorted_menu():
     clear()
     print(colors.BLUE + "Videos:" + colors.ENDC)
     printlist(videos)
@@ -107,9 +112,43 @@ def auto_menu():
 
     if len(subs) != len(videos):
         print( colors.WARNING + "Warrning: Videos and Subitiles files don't have same number." + colors.ENDC)
-# Manual menu func
-def manual_menu():
-    pass
+
+# Rename by a format
+def rename():
+    clear()
+    print(colors.WARNING + "Enter the video naming format, For example:" + colors.ENDC)
+    print("BreakingBad.S01E02.mp4 will become BreakingBad.S" + colors.GREEN + "@s" + colors.ENDC + "E" + colors.GREEN + "@e" + colors.ENDC + ".mp4")
+    video_name = input(">>> ")
+    seasons_list = []
+    videos_manual = []
+    seasons_number = int(input("Please enter The Seasons number: "))
+    for i in range(1, seasons_number + 1):
+        try:
+            season_ep = int(input(f"How many Episodes in Season {i}: "))
+        except ValueError:
+            print("This is not a number ):")
+            time.sleep(1)
+            manual_menu()
+        l = [season_ep]
+        seasons_list.append(l)
+    for index, li in enumerate(seasons_list):
+        endl()
+        tmp_video_name = video_name
+        s = "%.2d" % (index + 1)
+        print("Season: " + s)
+        for e in range(1,li[0] + 1):
+            e = "%.2d" % e
+            video_name = video_name.replace("@s", s)
+            video_name = video_name.replace("@e", e)
+            video_format = get_video_format(video_name)
+            sub_format = get_sub_format(subs[0])
+            video_name = video_name.replace(video_format, "")
+            video_name += sub_format
+            print(video_name)
+            videos_manual.append(video_name)
+            video_name = tmp_video_name
+    return videos_manual
+
 # Main menu func
 def main_menu():
     clear()
@@ -122,9 +161,9 @@ def main_menu():
     choice = inq.prompt(choice)
     choice = choice['op']
     if "Auto" in choice:
-        auto_menu()
+        return rename_to_list(subs, videos)
     elif "Manual" in choice:
-        manual_menu()
+        return rename()
     elif "exit" in choice:
         print("Good bye...")
         exit()
@@ -134,26 +173,28 @@ def main_menu():
         time.sleep(1)
         main_menu()
 
-def rename_copy(subs):
-    renamed_sub_list = rename(subs, videos)
+def rename_copy(subs, renamed_sub_list):
+    print("Copping subs from", sub_path, "to", video_path)
     for org_sub, renamed_sub in zip(subs, renamed_sub_list):
         org_sub_path = os.path.join(sub_path, org_sub)
         target_sub_path = os.path.join(video_path, renamed_sub)
-        shutil.copytree(org_sub_path, target_sub_path)
+        copy(org_sub_path, target_sub_path)
 
 # Main
 def main():
-    main_menu()
     endl()
+    print_sorted_menu()
     print("Are you ok with this sorting ?")
     ans = inq.prompt(confirm_menu)
     if ans['istrue']:
-        rename_copy(subs)
+        renamed_sub_list = main_menu()
+        rename_copy(subs, renamed_sub_list)
     else:
         if not re_order_menu():
             main()
         else:
-            rename_copy(subs)
+            renamed_sub_list = main_menu()
+            rename_copy(subs, renamed_sub_list)
 
 if __name__=="__main__":
     main()
