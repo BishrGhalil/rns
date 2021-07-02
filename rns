@@ -8,11 +8,22 @@ from platform import system
 from lists_header import *
 from colors import bcolors as colors
 
+# ------ Help menu
+print_help = lambda: print("Usage: rns \"Videos directory\" \"Subtitles directory\"")
+if sys.argv[1] in ['-h', '--help']:
+    print_help()
+    exit()
+
 # -------------------- Getting static vars
-os_name = system()                  # Getting operating system's name
-video_path = sys.argv[1]            # Video path from arguments 
-sub_path = sys.argv[2]              # Subtitles path from arguments
+elif len(sys.argv) == 3:
+    os_name = system()                  # Getting operating system's name
+    video_path = sys.argv[1]            # Video path from arguments 
+    sub_path = sys.argv[2]              # Subtitles path from arguments
 # ----- Getting right subs path
+else:
+    print_help()
+    exit()
+
 try:
     os.chdir(sub_path)
 except FileNotFoundError:
@@ -101,15 +112,54 @@ def re_order(org):
     else:
         re_order(org)
 
+def delete(org):
+    delete_menu = [
+            inq.List('op',
+                message = "An item to delete",
+                choices = [item for item in org]
+                ),
+            ]
+    item_to_delete = inq.prompt(delete_menu)
+    item_to_delete = item_to_delete['op']
+    print("Are you sure you want to delete this item ?")
+    ans = inq.prompt(confirm_menu)
+    ans = ans['istrue']
+    if ans:
+        org.remove(item_to_delete)
+        endl()
+        print("Do you want to delete another item ?")
+        ans = inq.prompt(confirm_menu)
+        ans = ans['istrue']
+        if ans :
+            delete(org)
+        else:
+            return True
+    else:
+        print("Do you want to delete another item ?")
+        ans = inq.prompt(confirm_menu)
+        ans = ans['istrue']
+        if ans :
+            delete(org)
+        else:
+            return False
+
 # A menu for controling reodering lists 
 def re_order_menu():
     clear()
     ans = inq.prompt(video_or_sub_menu)
     ans = ans['op']
     if "video" in ans:
-        re_order(videos)
+        delete(videos)
+        print("Do you want to change the order ?")
+        ans = inq.prompt(confirm_menu)
+        if ans['istrue']:
+            re_order(videos)
     elif "sub" in ans:
-        re_order(subs)
+        delete(subs)
+        print("Do you want to change the order ?")
+        ans = inq.prompt(confirm_menu)
+        if ans["istrue"]:
+            re_order(subs)
     else:
         print("Unkown option ):")
         return 0
