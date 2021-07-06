@@ -5,7 +5,11 @@ A simple python script to sort, rename and reorder subtitle files depending on t
 * [inquirer](https://pypi.org/project/python-inquirer/)
 ### Install
 #### Linux
-Just clone the repo and run the script as shown in the Usage section.
+first you need to install the inquirer module
+```
+pip install inquirer
+```
+clone the repo and run the script as shown in the Usage section.
 ```bash
 git clone https://github.com/BishrGhalil/rns.git
 cd rns
