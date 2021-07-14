@@ -1,6 +1,7 @@
 # ReName Subtitles (RNS)
 A simple python script to sort, rename and reorder subtitle files depending on their videos names.
 ### Dependencies
+##### for linux only
 * python
 * [inquirer](https://pypi.org/project/python-inquirer/)
 ### Install
