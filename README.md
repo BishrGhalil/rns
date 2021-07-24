@@ -1,5 +1,5 @@
-# ReName Subtitles (RNS)
-A simple python script to sort, rename and reorder subtitle files depending on their videos names.
+# SubMan (Subtitle Manager)
+A simple python script to manage subtitle files.
 ### Dependencies
 ##### for linux only
 * python
@@ -10,20 +10,23 @@ first you need to install the inquirer module
 ```
 pip install inquirer
 ```
-clone the repo and run the script as shown in the Usage section.
+clone the repo and run the script.
 ```bash
-git clone https://github.com/BishrGhalil/rns.git
-cd rns
-rns --help
+git clone https://github.com/BishrGhalil/subman
+cd subman
+sudo ln -s subman /bin/subman
 ```
 #### Windows
 1. Download the setup.exe file and install it.
 2. Open the rns folder and run rns.exe.
 ### Usage
+You can pass the directories as arguments:
 ```bash
-rns <videos directory> <subtitles directory>
+subman <videos directory> <subtitles directory>
 ```
-### Example
-```bash
-rns "$HOME/Videos/Series/BreakingBad" "$HOME/Downloads/BreakingBad-Subs"
+Or you can run it without arguments:
+```
+$ subman
+Enter videos path:
+Enter Subtitles path:
 ```
