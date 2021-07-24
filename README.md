@@ -18,7 +18,7 @@ sudo ln -s subman /bin/subman
 ```
 #### Windows
 1. Download the setup.exe file and install it.
-2. Open the rns folder and run rns.exe.
+2. Open the rns folder and run subman.exe.
 ### Usage
 You can pass the directories as arguments:
 ```bash
