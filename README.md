@@ -10,7 +10,7 @@ first you need to install the inquirer module
 ```
 pip install inquirer
 ```
-clone the repo and run the script.
+clone the repo and make a symbolic link to the script.
 ```bash
 git clone https://github.com/BishrGhalil/subman
 cd subman
@@ -18,7 +18,7 @@ sudo ln -s subman /bin/subman
 ```
 #### Windows
 1. Download the setup.exe file and install it.
-2. Open the rns folder and run subman.exe.
+2. Open the subman folder and run subman.exe.
 ### Usage
 You can pass the directories as arguments:
 ```bash
