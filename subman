@@ -5,7 +5,7 @@ import time
 import inquirer as inq
 from platform import system
 from lists_header import *
-from colors import bcolors as colors
+from c_colors import bcolors as colors
 
 # Getting The OS name
 os_name = system()

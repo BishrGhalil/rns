@@ -6,15 +6,11 @@ A simple python script to manage subtitle files.
 * [inquirer](https://pypi.org/project/python-inquirer/)
 ### Install
 #### Linux
-first you need to install the inquirer module
-```
-pip install inquirer
-```
-clone the repo and make a symbolic link to the script.
 ```bash
-git clone https://github.com/BishrGhalil/subman
+git clone https://github.com/BishrGhalil/subman.git
 cd subman
-sudo ln -s subman /bin/subman
+pip3 install -r requirements.txt
+sudo make
 ```
 #### Windows
 1. Download the setup.exe file and install it.
